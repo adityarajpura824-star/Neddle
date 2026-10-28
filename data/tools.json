@@ -1,0 +1,64 @@
+[
+  {
+    "name": "install_apk",
+    "description": "Install an Android APK file onto the connected mobile device and verify installation success.",
+    "parameters": {
+      "apk_path": {"type": "string", "description": "Local file path or URL to the .apk file"},
+      "reinstall": {"type": "boolean", "description": "Whether to overwrite an existing installation (-r flag)"}
+    },
+    "required": ["apk_path"]
+  },
+  {
+    "name": "launch_app",
+    "description": "Launch an installed Android application by its package name and optional activity.",
+    "parameters": {
+      "package_name": {"type": "string", "description": "Android package identifier, e.g. com.example.expensetracker"},
+      "clear_state": {"type": "boolean", "description": "Clear app data before launching for a clean test run"}
+    },
+    "required": ["package_name"]
+  },
+  {
+    "name": "inspect_ui_state",
+    "description": "Dump the active screen UI hierarchy to check visible buttons, text fields, and verify the screen rendered properly.",
+    "parameters": {
+      "expected_text": {"type": "string", "description": "Optional text or label to verify on the current screen"}
+    },
+    "required": []
+  },
+  {
+    "name": "check_app_logs",
+    "description": "Read device logcat output for a package to detect crashes, exceptions, or ANR errors.",
+    "parameters": {
+      "package_name": {"type": "string", "description": "Android package identifier to filter logs"},
+      "lines": {"type": "integer", "description": "Number of recent log lines to inspect (default 100)"}
+    },
+    "required": ["package_name"]
+  },
+  {
+    "name": "capture_screenshot",
+    "description": "Capture a screenshot of the current mobile screen to visually verify the app state.",
+    "parameters": {
+      "save_path": {"type": "string", "description": "File path to save the captured PNG screenshot"}
+    },
+    "required": ["save_path"]
+  },
+  {
+    "name": "get_weather",
+    "description": "Get current weather conditions and temperature for a given city.",
+    "parameters": {
+      "city": {"type": "string", "description": "City name"},
+      "unit": {"type": "string", "description": "Temperature unit: celsius or fahrenheit"}
+    },
+    "required": ["city"]
+  },
+  {
+    "name": "set_smart_light",
+    "description": "Control smart home lights in a specific room.",
+    "parameters": {
+      "room": {"type": "string", "description": "Target room name"},
+      "state": {"type": "string", "description": "on or off"},
+      "brightness": {"type": "integer", "description": "Brightness percentage from 0 to 100"}
+    },
+    "required": ["room", "state"]
+  }
+]

@@ -1,0 +1,11 @@
+{"query": "Install the updated build at ./builds/app-debug.apk over the existing app", "tool_call": {"name": "install_apk", "arguments": {"apk_path": "./builds/app-debug.apk", "reinstall": true}}}
+{"query": "Push and install /sdcard/Download/release-v2.apk as a fresh install", "tool_call": {"name": "install_apk", "arguments": {"apk_path": "/sdcard/Download/release-v2.apk", "reinstall": false}}}
+{"query": "Open com.example.expensetracker and wipe its previous state first", "tool_call": {"name": "launch_app", "arguments": {"package_name": "com.example.expensetracker", "clear_state": true}}}
+{"query": "Start up the app com.acme.shop without clearing data", "tool_call": {"name": "launch_app", "arguments": {"package_name": "com.acme.shop", "clear_state": false}}}
+{"query": "Check if the screen is showing the Add Transaction button right now", "tool_call": {"name": "inspect_ui_state", "arguments": {"expected_text": "Add Transaction"}}}
+{"query": "Dump the current UI tree so I can see what elements are on screen", "tool_call": {"name": "inspect_ui_state", "arguments": {}}}
+{"query": "See if com.example.expensetracker crashed in the last 150 log lines", "tool_call": {"name": "check_app_logs", "arguments": {"package_name": "com.example.expensetracker", "lines": 150}}}
+{"query": "Check logcat for any fatal exceptions in com.acme.shop", "tool_call": {"name": "check_app_logs", "arguments": {"package_name": "com.acme.shop", "lines": 100}}}
+{"query": "Take a screenshot of the phone and save it to ./artifacts/home_screen.png", "tool_call": {"name": "capture_screenshot", "arguments": {"save_path": "./artifacts/home_screen.png"}}}
+{"query": "What is the weather like in Mumbai in celsius?", "tool_call": {"name": "get_weather", "arguments": {"city": "Mumbai", "unit": "celsius"}}}
+{"query": "Dim the bedroom lights to 30 percent", "tool_call": {"name": "set_smart_light", "arguments": {"room": "bedroom", "state": "on", "brightness": 30}}}
