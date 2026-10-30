@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+checkpoints/
+artifacts/
+data/synthetic_train.jsonl
+
+# Node / Cloudflare
+node_modules/
+.wrangler/
+.dev.vars
+
+# Android
+.gradle/
+build/
+local.properties
+*.apk
+*.gguf

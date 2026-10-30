@@ -1,0 +1,16 @@
+{
+  "name": "neddle-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker relay that lets Claude (custom connector) reach the Neddle app on your phone",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node test/relay.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "ws": "^8.18.0"
+  }
+}

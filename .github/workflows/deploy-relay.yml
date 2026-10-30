@@ -1,0 +1,85 @@
+name: Deploy Neddle Relay
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "relay/**"
+      - ".github/workflows/deploy-relay.yml"
+  workflow_dispatch:
+
+jobs:
+  relay:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: relay
+        shell: bash
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NEDDLE_TOKEN: ${{ secrets.NEDDLE_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: relay/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test the relay
+        run: |
+          set +e
+          npm test 2>&1 | tee "$RUNNER_TEMP/relay-test.log"
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            echo "::error title=Relay tests failed::$(grep -E '^(FAIL|     )' "$RUNNER_TEMP/relay-test.log" | head -20 | tr '\n' '|')"
+          fi
+          exit "$code"
+
+      - name: Check Cloudflare secrets
+        id: gate
+        run: |
+          missing=""
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID NEDDLE_TOKEN; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::notice title=Relay tested but not deployed::Add these repository secrets, then re-run this workflow:$missing"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy the Worker
+        if: steps.gate.outputs.deploy == 'true'
+        run: |
+          if ! npx wrangler deploy > "$RUNNER_TEMP/deploy.log" 2>&1; then
+            cat "$RUNNER_TEMP/deploy.log"
+            echo "::error title=wrangler deploy failed::$(tail -n 15 "$RUNNER_TEMP/deploy.log" | tr '\n' '|')"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/deploy.log"
+
+          if ! printf '%s' "$NEDDLE_TOKEN" | npx wrangler secret put NEDDLE_TOKEN > "$RUNNER_TEMP/secret.log" 2>&1; then
+            cat "$RUNNER_TEMP/secret.log"
+            echo "::error title=Setting NEDDLE_TOKEN failed::$(tail -n 10 "$RUNNER_TEMP/secret.log" | tr '\n' '|')"
+            exit 1
+          fi
+
+          url=$(grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/deploy.log" | head -1)
+          echo "::notice title=Neddle relay deployed::$url"
+          {
+            echo "### Neddle relay deployed"
+            echo ""
+            echo "- Relay address (for the phone app): \`$url\`"
+            echo "- Claude connector URL: \`$url/mcp/<your NEDDLE_TOKEN>\`"
+            echo ""
+            echo "Your token is not shown here. The connector URL contains it, so treat that URL like a password."
+          } >> "$GITHUB_STEP_SUMMARY"

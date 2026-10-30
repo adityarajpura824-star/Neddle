@@ -1,0 +1,10 @@
+{
+  "name": "neddle-relay",
+  "main": "src/index.js",
+  "compatibility_date": "2025-10-01",
+  "durable_objects": {
+    "bindings": [{ "name": "PHONE_HUB", "class_name": "PhoneHub" }]
+  },
+  // The Workers Free plan only supports SQLite-backed Durable Objects.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PhoneHub"] }]
+}
