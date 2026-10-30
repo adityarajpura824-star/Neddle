@@ -18,8 +18,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      # GitHub's ubuntu runners ship the Android SDK (ANDROID_HOME); the
+      # android-actions/setup-android step failed here, so use the preinstalled one.
+      - name: Prepare preinstalled Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" "$ANDROID_HOME/build-tools"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
       - name: Setup Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
